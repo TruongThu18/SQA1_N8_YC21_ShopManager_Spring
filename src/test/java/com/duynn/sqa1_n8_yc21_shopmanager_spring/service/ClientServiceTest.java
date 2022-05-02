@@ -52,9 +52,16 @@ class ClientServiceTest {
     void create() throws Exception {
         Client c = new Client(0,"ngyen van a","hn","0123456789",true);
         clientService.create(c);
-        Client client = clientService.searchClientByPhone("0123456789").get(0);
-        assertNotNull(client);
-        clientService.delete(client.getID());
+        List<Client> client = clientService.searchClientByPhone("0123456789");
+        assertNotEquals(0,client.size());
+        int count=0;
+        for(Client cl :client){
+            if(cl.getName().equals(c.getName()) && cl.getAddress().equals(c.getAddress())){
+                count++;
+                clientService.delete(cl.getID());
+            }
+        }
+        assertNotEquals(0,count);
     }
 
     @Test
@@ -65,11 +72,19 @@ class ClientServiceTest {
         clientupdate.setAddress("hn");
         clientupdate.setPhoneNumber("000");
         clientService.update(clientupdate);
-        Client client = clientService.searchClientByPhone(clientupdate.getPhoneNumber()).get(0);
-        assertNotNull(client);
-        assertEquals(client.getAddress(),clientupdate.getAddress());
-        assertEquals(client.getName(),clientupdate.getName());
+        List<Client> client = clientService.searchClientByPhone(clientupdate.getPhoneNumber());
+        assertNotEquals(0,client.size());
+        int count=0;
+        for(Client cl: client){
+            if(cl.getID()==clientupdate.getID()&&
+            cl.getName().equals(clientupdate.getName()) &&
+                    cl.getAddress().equals(clientupdate.getAddress())) {
+                count++;
+
+            }
+        }
         clientService.update(list.get(0));
+        assertEquals(1,count);
     }
 
     @Test
@@ -77,8 +92,15 @@ class ClientServiceTest {
         List<Client> list = clientService.searchClientByPhone("");
         clientService.delete(list.get(0).getID());
         List<Client> client = clientService.searchClientByPhone(list.get(0).getPhoneNumber());
-        assertEquals(0,client.size());
+        int count=0;
+        for(Client cl: client){
+            if(cl.getID()==list.get(0).getID() ){
+                count++;
+
+            }
+        }
         clientService.update(list.get(0));
+        assertEquals(0,count);
     }
 
 //    @Test
