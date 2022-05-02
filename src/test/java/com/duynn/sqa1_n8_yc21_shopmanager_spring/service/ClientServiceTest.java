@@ -18,7 +18,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
@@ -49,15 +49,36 @@ class ClientServiceTest {
     }
 
     @Test
-    void create() {
+    void create() throws Exception {
+        Client c = new Client(0,"ngyen van a","hn","0123456789",true);
+        clientService.create(c);
+        Client client = clientService.searchClientByPhone("0123456789").get(0);
+        assertNotNull(client);
+        clientService.delete(client.getID());
     }
 
     @Test
-    void update() {
+    void update() throws Exception {
+        List<Client> list = clientService.searchClientByPhone("");
+        Client clientupdate = list.get(0);
+        clientupdate.setName("abc");
+        clientupdate.setAddress("hn");
+        clientupdate.setPhoneNumber("000");
+        clientService.update(clientupdate);
+        Client client = clientService.searchClientByPhone(clientupdate.getPhoneNumber()).get(0);
+        assertNotNull(client);
+        assertEquals(client.getAddress(),clientupdate.getAddress());
+        assertEquals(client.getName(),clientupdate.getName());
+        clientService.update(list.get(0));
     }
 
     @Test
-    void delete() {
+    void delete() throws Exception {
+        List<Client> list = clientService.searchClientByPhone("");
+        clientService.delete(list.get(0).getID());
+        List<Client> client = clientService.searchClientByPhone(list.get(0).getPhoneNumber());
+        assertEquals(0,client.size());
+        clientService.update(list.get(0));
     }
 
 //    @Test
